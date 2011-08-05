@@ -1,0 +1,6 @@
+Library-SymbolicName: oracle.toplink.essentials
+Library-Version: 2.0.0.b41-beta2
+Library-Name: TopLink Essentials
+Import-Bundle: 
+ com.springsource.oracle.toplink.essentials;version="[2.0.0.b41-beta2, 2.0.0.b41-beta2]",
+ com.springsource.javax.persistence;version="[1.0.0, 1.0.0]"

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plan name="helloworld_unscoped.plan" version="1.0.0.RELEASE" scoped="false" atomic="true"
+        xmlns="http://www.springsource.org/schema/dm-server/plan"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.springsource.org/schema/dm-server/plan 
+                            http://www.springsource.org/schema/dm-server/plan/springsource-dm-server-plan.xsd">
+
+    <artifact type="bundle" name="hello.domain" version="0"/>
+    <artifact type="bundle" name="hello.service.api" version="0"/>
+    <artifact type="bundle" name="hello.service.impl_en" version="0"/>
+  
+</plan>

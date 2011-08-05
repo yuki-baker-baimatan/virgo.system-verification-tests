@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="org.eclipse.virgo.server.svt" xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:maven="antlib:org.apache.maven.artifact.ant">
+	
+	<property name="ivy.cache.dir" value="${basedir}/../ivy-cache" />
+	<property name="integration.repo.dir" value="${basedir}/../integration-repo"/>
+	<property name="download.dir" value="${basedir}/target/bundles"/>
+
+	<property file="${basedir}/../build.properties"/>
+	<property file="${basedir}/../build.versions"/>
+	<import file="${basedir}/../virgo-build/standard/default.xml"/>
+	<import file="${basedir}/../build-svt/test-package.xml"/>
+
+	<property name="bundles.dir" value="${basedir}/bundles"/>
+	<property name="libraries.dir" value="${basedir}/libraries"/>
+	<property name="greenpagesdb.dir" value="${basedir}/../org.eclipse.virgo.server.svt/greenpages-db"/>
+	<property name="svt.cleanstart.dir" value="${basedir}/../org.eclipse.virgo.server.svt.cleanstart"/>
+	
+	<target name="maven.init" depends="ivy.init">
+		<ivy:cachepath resolveId="maven.ant.tasks.classpath" pathid="maven.ant.tasks.classpath"
+				organisation="org.apache.maven" module="com.springsource.org.apache.maven.ant"
+				revision="${org.apache.maven.ant.version}" conf="runtime" type="jar" inline="true" log="download-only"/>
+		<taskdef resource="org/apache/maven/artifact/ant/antlib.xml" uri="antlib:org.apache.maven.artifact.ant"
+				classpathref="maven.ant.tasks.classpath"/>
+		<maven:install-provider groupId="org.springframework.build.aws" artifactId="org.springframework.build.aws.maven"
+				version="${org.springframework.build.aws.maven.version}"/>
+	</target>
+	   
+	<target name="maven.download" depends="maven.init">
+	    <delete dir="${download.dir}" quiet="true"/>
+	    <mkdir dir="${download.dir}"/>
+	    
+	    <maven:dependencies filesetId="maven.fileset" versionsId="maven.versions">
+	        <dependency groupId="org.apache.struts" artifactId="struts2-mailreader" version="2.1.8" type="war" scope="compile" />
+	        <dependency groupId="org.wicketstuff" artifactId="phonebook" version="1.4.8" type="war" scope="compile" />
+	        <remoteRepository id="maven.central" url="http://repo1.maven.org/maven2" />
+	    </maven:dependencies>
+
+	    <copy todir="${download.dir}">
+	        <fileset refid="maven.fileset" />
+	        <mapper classpathref="maven.ant.tasks.classpath" classname="org.apache.maven.artifact.ant.VersionMapper" from="${maven.versions}" to="flatten" />
+	    </copy>
+	</target>
+  
+	<target name="download" depends="ivy.init,maven.download">
+		<ivy:resolve resolveId="download.deps" file="${basedir}/ivy.xml" transitive="false"/>
+		<ivy:retrieve resolveId="download.deps" pattern="${download.dir}/[artifact]-[revision].[ext]" conf="test" type="jar"/>
+	</target>
+
+    <target name="startup.pre">
+		<copy todir="${usr.dir}">
+			<fileset dir="${bundles.dir}"/>
+		</copy>
+		<copy todir="${usr.dir}">
+			<fileset dir="${libraries.dir}"/>
+		</copy>
+    <antcall target="startup.greenpages.h2db"/>
+     <sleep milliseconds="1000"/>
+    <antcall target="refresh.greenpages.h2db"/>
+   </target>
+	
+	<path id="hsqldb.classpath">
+		<fileset dir="${test.package.dir}/repository/usr">
+			<include name="com.springsource.org.hsqldb-1.8.0.9.jar" />
+		</fileset>
+	</path>
+	
+	<path id="h2db.classpath">
+		<fileset dir="${test.package.dir}/repository/usr">
+			<include name="com.springsource.org.h2-1.0.71.jar" />
+		</fileset>
+	</path>
+
+    <target name="startup.greenpages.h2db">
+	 	<java classname="org.h2.tools.Server" fork="true" spawn="true">
+			<classpath refid="h2db.classpath"/>
+		</java>
+       <fail if="start.failed" message="h2 db start up failed"/>
+    </target>
+
+  <target name="refresh.greenpages.h2db">
+	 <path id="svt.test.db">
+		<pathelement location="${greenpagesdb.dir}" />
+	  </path>
+	 <all-bundles target="setupGreenPagesDB" buildpathRef="svt.test.db">
+		<property name="server.dir" value="${test.package.dir}"/>
+	  </all-bundles>
+   </target>
+
+ <target name="test-clean-startup">
+  <antcall target="startup.clean"/>
+	 <path id="svt.test.clean">
+		<pathelement location="${svt.cleanstart.dir}" />
+	 </path>
+    <all-bundles target="startup.clean.post" buildpathRef="svt.test.clean"/>
+  <antcall target="shutdown"/>
+ </target>
+
+
+	<target name="shutdown.post">
+		<echo message="Testing warm restart"/>
+		<sleep seconds="5"/>
+		<antcall target="startup"/>
+	<!--	<antcall target="test.do"/>-->
+		<antcall target="shutdown"/>
+	<echo message="Testing clean start"/>
+	    <antcall target="test-clean-startup"/>
+    </target>
+	
+</project>

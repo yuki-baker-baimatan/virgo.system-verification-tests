@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="test-package">
+
+	<property name="test.staging.dir" value="${target.dir}/test-expanded"/>
+	<property name="test.package.dir" value="${test.staging.dir}/virgo-tomcat-server"/>
+	<property name="pickup.dir" value="${test.package.dir}/pickup"/>
+	<property name="usr.dir" value="${test.package.dir}/repository/usr"/>
+	<property name="cleanstart.test.dir" value="${basedir}/../org.eclipse.virgo.server.svt.cleanstart/src/test/resources"/>
+	<property name="cleanstart.test.package.dir" value="${cleanstart.test.dir}/virgo-tomcat-server"/>
+	<property name="cleanstart.test.package.dir1" value="${cleanstart.test.dir}/virgo-tomcat-server1"/>
+	<property name="cleanstart.test.package.dir2" value="${cleanstart.test.dir}/virgo-tomcat-server2"/>
+
+	<target name="test-package"
+			description="Runs a test on the packaged build">
+		<antcall target="unzip.package"/>
+		<antcall target="startup.pre"/>
+		<antcall target="startup"/>
+		<antcall target="startup.post"/>
+		<antcall target="test.do"/>
+		<antcall target="shutdown.pre"/>
+		<antcall target="shutdown"/>
+		<antcall target="shutdown.post"/>
+	</target>
+
+	<target name="unzip.package">
+		<delete dir="${test.staging.dir}" quiet="true"/>
+		<mkdir dir="${test.staging.dir}"/>
+		<unzip dest="${test.staging.dir}">
+			<fileset dir="${basedir}/../build-svt/target">
+				<include name="artifacts/virgo-tomcat-server-*.zip"/>
+			</fileset>
+			<regexpmapper from="(virgo-tomcat-server-[^/]*/)(.*)" to="virgo-tomcat-server/\2" />
+		</unzip>
+		<unzip dest="${cleanstart.test.dir}">
+			<fileset dir="${basedir}/../build-svt/target">
+				<include name="artifacts/virgo-tomcat-server-*.zip"/>
+			</fileset>
+			<regexpmapper from="(virgo-tomcat-server-[^/]*/)(.*)" to="virgo-tomcat-server/\2" />
+		</unzip>
+		<unzip dest="${cleanstart.test.dir}">
+			<fileset dir="${basedir}/../build-svt/target">
+				<include name="artifacts/virgo-tomcat-server-*.zip"/>
+			</fileset>
+			<regexpmapper from="(virgo-tomcat-server-[^/]*/)(.*)" to="virgo-tomcat-server1/\2" />
+		</unzip>
+		<unzip dest="${cleanstart.test.dir}">
+			<fileset dir="${basedir}/../build-svt/target">
+				<include name="artifacts/virgo-tomcat-server-*.zip"/>
+			</fileset>
+			<regexpmapper from="(virgo-tomcat-server-[^/]*/)(.*)" to="virgo-tomcat-server2/\2" />
+		</unzip>
+	<chmod perm="755">
+			<fileset dir="${test.package.dir}/bin">
+				<include name="*.sh"/>
+			</fileset>
+			<fileset dir="${cleanstart.test.package.dir}/bin">
+				<include name="*.sh"/>
+			</fileset>
+			<fileset dir="${cleanstart.test.package.dir1}/bin">
+					<include name="*.sh"/>
+			</fileset>
+			<fileset dir="${cleanstart.test.package.dir2}/bin">
+				<include name="*.sh"/>
+			</fileset>
+		</chmod>
+	</target>
+
+	<target name="startup.pre"/>
+
+	<target name="startup" depends="shutdown">
+		<echo message="Starting Up Virgo Web Server" />
+
+		<exec dir="${test.package.dir}" osfamily="unix" spawn="true" executable="bin/startup.sh"/>
+		
+		<exec dir="${test.package.dir}" osfamily="windows" spawn="true" executable="cmd">
+			<arg line="/c bin\startup.bat" />
+		</exec>
+
+		<waitfor maxwait="5" maxwaitunit="minute" timeoutproperty="start.failed">
+			<http url="http://localhost:8080/"/>
+		</waitfor>
+		<fail if="start.failed" message="Virgo Web Server start up failed"/>
+	</target>
+	
+	<target name="startup.clean" depends="shutdown">
+		<echo message="Clean Starting of Virgo Web Server" />
+
+		<exec dir="${test.package.dir}" osfamily="unix" spawn="true" executable="bin/startup.sh">
+			<arg line="-clean" />
+		</exec>
+		
+		<exec dir="${test.package.dir}" osfamily="windows" spawn="true" executable="cmd">
+			<arg line="/c bin\startup.bat" />
+			<arg line="-clean" />
+		</exec>
+
+		<waitfor maxwait="5" maxwaitunit="minute" timeoutproperty="start.failed">
+			<http url="http://localhost:8080/"/>
+		</waitfor>
+		<fail if="start.failed" message="Virgo Web Server clean start up failed"/>
+	</target>
+
+	<target name="startup.post"/>
+
+	<target name="shutdown.pre"/>
+
+	<target name="shutdown">
+		<echo message="Shutting Down Virgo Web Server" />
+
+		<exec dir="${test.package.dir}" osfamily="unix" spawn="true" executable="bin/shutdown.sh">
+			<arg line="-immediate" />
+		</exec>
+		<exec dir="${test.package.dir}" osfamily="windows" spawn="true" executable="cmd">
+			<arg line="/c bin\shutdown.bat" />
+			<arg line="-immediate" />
+		</exec>
+
+		<waitfor maxwait="5" maxwaitunit="minute" timeoutproperty="shutdown.failed">
+			<not>
+				<http url="http://localhost:8080/"/>
+			</not>
+		</waitfor>
+		<fail if="shutdown.failed" message="Virgo Web Server shutdown failed"/>
+	</target>
+
+	<target name="shutdown.post"/>
+
+</project>

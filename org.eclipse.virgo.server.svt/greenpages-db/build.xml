@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<project name="setupGreenPagesDB" basedir="." default="all">
+	<property file="${basedir}/../../build.properties"/>
+	<import file="${basedir}/../../build-svt/test-package.xml"/>
+	
+    <property name="server.home" value="${server.dir}"/>
+	
+    <path id="h2db.classpath">
+		<fileset dir="${server.home}/repository/usr">
+			<include name="com.springsource.org.h2-1.0.71.jar" />
+		</fileset>
+	</path>
+	
+    <target name="setH2DBProperties" >
+		<property name="db.driver" value="org.h2.Driver"/>
+		<property name="db.url" value="jdbc:h2:~/greenpages-db/greenpages"/>
+		<property name="db.user" value="greenpages"/>
+		<property name="db.pw" value="pass"/>
+	</target>
+	
+    <target name="populateH2DBData"  depends="setH2DBProperties">
+		<echo message="Create tables using: ${db.driver} ${db.url}" />
+		<sql driver="${db.driver}" url="${db.url}" userid="${db.user}" password="${db.pw}" onerror="continue">
+			<classpath refid="h2db.classpath"/>
+			<transaction src="db.sql" />
+		</sql>
+	</target>
+
+    <target name="setupGreenPagesDB" depends="populateH2DBData" />
+
+</project>

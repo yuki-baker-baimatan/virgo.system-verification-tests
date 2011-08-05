@@ -1,0 +1,6 @@
+Library-SymbolicName: org.apache.myfaces
+Library-Version: 1.2.2
+Library-Name: Apache MyFaces Java Server Faces Implementation
+Import-Bundle: 
+ com.springsource.org.apache.myfaces;version="[1.2.2, 1.2.2]",
+ com.springsource.org.apache.myfaces.javax.faces;version="[1.2.2, 1.2.2]"

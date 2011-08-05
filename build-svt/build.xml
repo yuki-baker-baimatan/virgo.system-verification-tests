@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="build-svt" default="precommit">
+
+	<path id="bundles"/>
+	
+	<property file="${basedir}/../build.properties"/>
+	<property file="${basedir}/../build.versions"/>
+	<import file="${basedir}/../virgo-build/multi-bundle/default.xml"/>
+
+	<target name="svt-test" description="Runs svt tests on the packaged build">
+		<path id="svt.test.bundles">
+			<pathelement location="${basedir}/../org.eclipse.virgo.server.svt" />
+		</path>
+		
+		<path id="download.bundles">
+			<pathelement location="${basedir}/../org.eclipse.virgo.server.svt" />
+			<pathelement location="${basedir}/../org.eclipse.virgo.server.svt.cleanstart" />
+		</path>
+	
+		<all-bundles target="download" buildpathRef="download.bundles"/>
+	
+		<antcall target="test.pre"/>
+		
+		<all-bundles target="test-package" buildpathRef="svt.test.bundles">
+			<property name="package.output.file" value="${package.output.file}"/>
+			<property name="package.basename" value="${package.basename}"/>
+			<property name="test-results.output.dir" value="${test-results.output.dir}"/>
+		</all-bundles>
+		
+		<antcall target="test.post"/>
+	</target>
+
+</project>

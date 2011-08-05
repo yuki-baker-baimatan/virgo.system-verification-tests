@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="org.eclipse.virgo.server.svt.cleanstart" xmlns:ivy="antlib:org.apache.ivy.ant">
+	
+	<property name="ivy.cache.dir" value="${basedir}/../ivy-cache" />
+	<property name="integration.repo.dir" value="${basedir}/../integration-repo"/>
+	<property name="download.dir" value="${basedir}/target/bundles"/>
+
+	<property file="${basedir}/../build.properties"/>
+	<property file="${basedir}/../build.versions"/>
+	<import file="${basedir}/../virgo-build/standard/default.xml"/>
+	
+	<target name="download" depends="ivy.init">
+		<delete dir="${download.dir}" quiet="true"/>
+		<mkdir dir="${download.dir}"/>
+
+		<ivy:resolve resolveId="download.deps" file="${basedir}/ivy.xml" transitive="false"/>
+		<ivy:retrieve resolveId="download.deps" pattern="${download.dir}/[artifact]-[revision].[ext]" conf="test" type="jar"/>
+	</target>
+	
+	<target name="startup.clean.post">
+	   <antcall target="test.do"/>
+	</target>
+	
+</project>
