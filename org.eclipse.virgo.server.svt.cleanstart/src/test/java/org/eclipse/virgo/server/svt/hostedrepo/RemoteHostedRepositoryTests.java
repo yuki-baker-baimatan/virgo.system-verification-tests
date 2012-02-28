@@ -68,7 +68,7 @@ public class RemoteHostedRepositoryTests extends AbstractWebTests {
 	private static final String downloadDir = "target/bundles";
 
 	private static String[] bundleNames = new String[] {
-			"com.springsource.org.antlr-3.0.1.jar",
+			// "com.springsource.org.antlr-3.0.1.jar", deleted from git as not covered by a full CQ
 			"com.springsource.javassist-3.9.0.GA.jar",
 			"com.springsource.net.sf.cglib-2.2.0.jar",
 			"com.springsource.org.apache.commons.collections-3.2.1.jar",
