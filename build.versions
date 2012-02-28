@@ -1,10 +1,10 @@
-org.eclipse.virgo.kernel=2.1.0.D-20100420092714
-org.eclipse.virgo.medic=1.0.1.D-20100420092100
-org.eclipse.virgo.osgi=2.1.0.D-20100420091535
-org.eclipse.virgo.repository=2.1.0.D-20100420092424
-org.eclipse.virgo.apps.repository=2.1.0.D-20100420101047
-org.eclipse.virgo.web=2.1.0.D-20100420094714
-org.eclipse.virgo.util=2.1.0.D-20100420091708
+org.eclipse.virgo.kernel=3.0.2.RELEASE
+org.eclipse.virgo.medic=3.0.2.RELEASE
+org.eclipse.virgo.osgi=3.0.2.RELEASE
+org.eclipse.virgo.repository=3.0.2.RELEASE
+org.eclipse.virgo.apps.repository=3.0.2.RELEASE
+org.eclipse.virgo.web=3.0.2.RELEASE
+org.eclipse.virgo.util=3.0.2.RELEASE
 
 com.springsource.json=1.0.1.RELEASE
 com.dumbster=1.6.0
@@ -26,7 +26,7 @@ org.apache.felix.log=1.0.0
 org.apache.log4j=1.2.15
 org.apache.taglibs=1.1.2
 org.aspectj=1.6.6.RELEASE
-org.eclipse.equinox.cm=1.0.0.v20080509-1800
+org.eclipse.equinox.cm=1.0.300.v20101204
 org.hibernate=3.2.6.ga
 org.hibernate.annotations=3.3.1.ga
 org.hibernate.annotations.common=3.3.0.ga
@@ -38,5 +38,5 @@ org.junit=4.5.0
 org.slf4j=1.5.10
 org.springframework.js=2.0.8.RELEASE
 org.springframework.osgi=1.2.1
-org.springframework=3.0.0.RELEASE
+org.springframework=3.0.5.RELEASE
 
