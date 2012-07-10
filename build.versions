@@ -2,7 +2,7 @@ org.eclipse.virgo.kernel=3.0.2.RELEASE
 org.eclipse.virgo.medic=3.0.2.RELEASE
 org.eclipse.virgo.osgi=3.0.2.RELEASE
 org.eclipse.virgo.repository=3.0.2.RELEASE
-org.eclipse.virgo.apps.repository=3.0.2.RELEASE
+org.eclipse.virgo.apps=3.0.2.RELEASE
 org.eclipse.virgo.web=3.0.2.RELEASE
 org.eclipse.virgo.util=3.0.2.RELEASE
 
