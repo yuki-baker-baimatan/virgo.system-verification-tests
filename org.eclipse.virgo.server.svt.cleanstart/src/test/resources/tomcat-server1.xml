@@ -15,40 +15,43 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<Server port="8007" shutdown="SHUTDOWN">
+<Server>
 
-	<Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
-	<Listener className="org.apache.catalina.core.JasperListener" />
-	<Listener className="org.apache.catalina.mbeans.ServerLifecycleListener" />
-	<Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
+  <!--APR library loader. Documentation at /docs/apr.html -->
+  <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
+  <!--Initialize Jasper prior to webapps are loaded. Documentation at /docs/jasper-howto.html -->
+  <Listener className="org.apache.catalina.core.JasperListener" />
+  <!-- Prevent memory leaks due to use of particular java/javax APIs-->
+  <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
+  <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
+  <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener" />
+  <Listener className="org.eclipse.virgo.web.tomcat.ServerLifecycleLoggingListener"/>
 
-	<Listener className="org.eclipse.virgo.web.tomcat.ServerLifecycleLoggingListener"/>
+  <Service name="Catalina">
+    <Connector port="8084" protocol="HTTP/1.1"
+               connectionTimeout="20000"
+               redirectPort="8445" />
 
-	<Service name="Catalina">
-		<Connector port="8084" protocol="HTTP/1.1"
-			connectionTimeout="20000"
-			redirectPort="8445" />
+    <Connector port="8445" protocol="HTTP/1.1" SSLEnabled="true"
+               maxThreads="150" scheme="https" secure="true"
+               clientAuth="false" sslProtocol="TLS"
+               keystoreFile="config/keystore"
+               keystorePass="changeit"/>
 
-		<Connector port="8445" protocol="HTTP/1.1" SSLEnabled="true"
-			maxThreads="150" scheme="https" secure="true"
-			clientAuth="false" sslProtocol="TLS"
-			keystoreFile="config/keystore"
-			keystorePass="changeit"/>
+    <Connector port="8011" protocol="AJP/1.3" redirectPort="8445" />
 
-		<Connector port="8011" protocol="AJP/1.3" redirectPort="8445" />
+    <Engine name="Catalina" defaultHost="localhost">
+      <Realm className="org.apache.catalina.realm.JAASRealm" appName="dm-kernel"
+             userClassNames="org.eclipse.virgo.kernel.authentication.User"
+             roleClassNames="org.eclipse.virgo.kernel.authentication.Role"/>
 
-		<Engine name="Catalina" defaultHost="localhost">
-			<Realm className="org.apache.catalina.realm.JAASRealm" appName="dm-kernel"
-					userClassNames="org.eclipse.virgo.kernel.authentication.User"
-					roleClassNames="org.eclipse.virgo.kernel.authentication.Role"/>
+      <Host name="localhost" appBase="webapps"
+            unpackWARs="true" autoDeploy="true"
+            xmlValidation="false" xmlNamespaceAware="false">
 
-			<Host name="localhost"  appBase="webapps"
-					unpackWARs="true" autoDeploy="true"
-					xmlValidation="false" xmlNamespaceAware="false">
-
-				<Valve className="org.apache.catalina.valves.AccessLogValve" directory="serviceability/logs/access"
-					prefix="localhost_access_log." suffix=".txt" pattern="common" resolveHosts="false"/>
-			</Host>
-		</Engine>
-	</Service>
+        <Valve className="org.apache.catalina.valves.AccessLogValve" directory="serviceability/logs/access"
+               prefix="localhost_access_log." suffix=".txt" pattern="common" resolveHosts="false"/>
+      </Host>
+    </Engine>
+  </Service>
 </Server>
